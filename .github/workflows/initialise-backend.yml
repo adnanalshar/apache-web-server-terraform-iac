@@ -7,6 +7,10 @@ on:
     paths:
       - '**/initialise-backend/**'
 
+defaults:
+  run:
+    working-directory: terraform/initialise-backend
+
 jobs:
     tf_unit_test:
         name: Terraform unit testing
@@ -23,9 +27,11 @@ jobs:
             - name: Terraform fmt
               id: fmt
               run: terraform fmt -recursive -check
-              working-directory: terraform/initialise-backend
+            
+            - name: Terraform init
+              id: init
+              run: terraform init
 
             - name: Terraform validate
               id: validate
               run: terraform validate
-              working-directory: terraform/initialise-backend
