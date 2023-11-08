@@ -2,10 +2,10 @@ name: Initialise TF backend
 
 on:
   pull_request:
-    paths:
-      - 'initialise-backend/**'
     branches:
       - master
+    paths:
+      - '**/initialise-backend/**'
 
 jobs:
     tf_unit_test:
