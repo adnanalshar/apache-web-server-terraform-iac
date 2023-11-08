@@ -23,9 +23,9 @@ jobs:
             - name: Terraform fmt
               id: fmt
               run: terraform fmt -recursive -check
-              working-directory: initialise-backend
+              working-directory: terraform/initialise-backend
 
             - name: Terraform validate
               id: validate
               run: terraform validate
-              working-directory: initialise-backend
+              working-directory: terraform/initialise-backend
