@@ -41,6 +41,7 @@ jobs:
 
     tf_plan:
       name: Terraform plan
+      needs: [tf_unit_test]
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
