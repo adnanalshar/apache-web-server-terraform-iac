@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_kms_key" "terraform_state_bucket_key" {
-  deletion_window_in_days = 10
+  deletion_window_in_days = 7
   enable_key_rotation     = true
   description             = "Used to encrypt objects inside the S3 bucket"
 }
