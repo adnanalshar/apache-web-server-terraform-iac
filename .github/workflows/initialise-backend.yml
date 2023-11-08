@@ -30,14 +30,6 @@ jobs:
         - name: Terraform fmt
           id: fmt
           run: terraform fmt -recursive -check 
-          
-        - name: Terraform init
-          id: init
-          run: terraform init
-          
-        - name: Terraform validate
-          id: validate
-          run: terraform validate
 
     tf_plan:
       name: Terraform plan
@@ -58,6 +50,14 @@ jobs:
             aws-region: eu-central-1
             role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
             role-session-name: initialisebackendsession
+
+        - name: Terraform init
+          id: init
+          run: terraform init
+            
+        - name: Terraform validate
+          id: validate
+          run: terraform validate
 
         - name: Terraform plan
           id: fmt
