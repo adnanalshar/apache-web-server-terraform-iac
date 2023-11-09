@@ -7,11 +7,11 @@ terraform {
     }
   }
   backend "s3" {
-    bucket         = "apache-webserver-terraform-state-bucket"
-    key            = "state/terraform.tfstate"
+    bucket         = "devops-projects-terraform-state-bucket"
+    key            = "state/apache-web-server-terraform-iac/terraform.tfstate"
     region         = "eu-central-1"
     encrypt        = true
     kms_key_id     = "alias/terraform_state_bucket_key"
-    dynamodb_table = "apache-webserver-terraform-state-dynamodb"
+    dynamodb_table = "devops-projects-terraform-state-dynamodb"
   }
 }

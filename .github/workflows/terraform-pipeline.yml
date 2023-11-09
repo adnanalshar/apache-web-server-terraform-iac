@@ -1,15 +1,15 @@
-name: Initialise TF backend
+name: TF pipeline
 
 on:
   pull_request:
     branches:
       - master
     paths:
-      - '**/initialise-backend/**'
+      - '**/terraform/**'
 
 defaults:
   run:
-    working-directory: terraform/initialise-backend
+    working-directory: terraform
 
 permissions:
   id-token: write
@@ -49,7 +49,7 @@ jobs:
             audience: sts.amazonaws.com
             aws-region: eu-central-1
             role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
-            role-session-name: initialisebackendsession
+            role-session-name: terraformpipeline
 
         - name: Terraform init
           id: init
@@ -60,5 +60,5 @@ jobs:
           run: terraform validate
 
         - name: Terraform plan
-          id: fmt
-          run: terraform plan
+          id: plan
+          run: terraform plan -input=false -no-color -out tf.plan
