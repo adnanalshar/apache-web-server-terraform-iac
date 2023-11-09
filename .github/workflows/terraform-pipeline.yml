@@ -1,0 +1,64 @@
+name: TF pipeline
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - '**/terraform/**'
+
+defaults:
+  run:
+    working-directory: terraform
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+    tf_unit_test:
+      name: Terraform unit testing
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v3
+          
+        - uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_version: 0.15.3
+            
+        - name: Terraform fmt
+          id: fmt
+          run: terraform fmt -recursive -check 
+
+    tf_plan:
+      name: Terraform plan
+      needs: [tf_unit_test]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v3
+
+        - uses: hashicorp/setup-terraform@v2
+          with:
+            terraform_version: 0.15.3
+
+        - name: Configure AWS credentials
+          uses: aws-actions/configure-aws-credentials@v4
+          with:
+            audience: sts.amazonaws.com
+            aws-region: eu-central-1
+            role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
+            role-session-name: terraformpipeline
+
+        - name: Terraform init
+          id: init
+          run: terraform init
+            
+        - name: Terraform validate
+          id: validate
+          run: terraform validate
+
+        - name: Terraform plan
+          id: plan
+          run: terraform plan -input=false -no-color -out tf.plan
