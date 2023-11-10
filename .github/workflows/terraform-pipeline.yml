@@ -71,7 +71,7 @@ jobs:
           with:
             name: tf.plan
             path: terraform/tf.plan
-            retention-days: 3
+            retention-days: 2
 
     tf_apply:
       name: Terraform apply
