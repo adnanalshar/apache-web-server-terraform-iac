@@ -62,7 +62,9 @@ jobs:
 
         - name: Terraform plan
           id: plan
-          run: terraform plan -input=false -no-color -out tf.plan
+          run: |
+            terraform plan -out tf.plan
+            cat tf.plan
 
         - name: Upload plan file
           uses: actions/upload-artifact@v3
