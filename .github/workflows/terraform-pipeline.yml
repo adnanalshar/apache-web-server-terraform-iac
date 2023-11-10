@@ -63,16 +63,14 @@ jobs:
 
         - name: Terraform plan
           id: plan
-          run: |
-            mkdir -p artifacts/terraform
-            terraform plan -out artifacts/terraform/tf.plan
+          run: terraform plan -out tf.plan
 
         - name: Upload plan file
           uses: actions/upload-artifact@v3
           id: upload
           with:
             name: terraform-plan
-            path: artifacts/terraform/tf.plan
+            path: terraform/tf.plan
             retention-days: 3
 
     tf_apply:
