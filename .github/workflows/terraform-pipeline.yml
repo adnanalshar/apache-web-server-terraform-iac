@@ -69,7 +69,7 @@ jobs:
           uses: actions/upload-artifact@v3
           id: upload
           with:
-            name: tf.plan
+            name: terraform-plan
             path: terraform/tf.plan
             retention-days: 3
 
@@ -97,9 +97,9 @@ jobs:
           uses: actions/download-artifact@v3
           id: download
           with:
-            name: tf.plan
+            name: terraform-plan
             path: terraform/tf.plan
 
         - name: Terraform apply
           id: apply
-          run: terraform apply -input=false tf.plan
+          run: terraform apply -input=false terraform/tf.plan
