@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - '**/terraform/**'
 
 defaults:
   run:
@@ -21,7 +19,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
           
         - uses: hashicorp/setup-terraform@v2
           with:
@@ -31,13 +29,13 @@ jobs:
           id: fmt
           run: terraform fmt -recursive -check 
 
-    tf_plan:
-      name: Terraform plan
+    tf_plan_and_apply:
+      name: Terraform plan and apply
       needs: [tf_unit_test]
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
 
         - uses: hashicorp/setup-terraform@v2
           with:
@@ -61,4 +59,8 @@ jobs:
 
         - name: Terraform plan
           id: plan
-          run: terraform plan -input=false -no-color -out tf.plan
+          run: terraform plan -out tf.plan
+
+        - name: Terraform apply
+          id: apply
+          run: terraform apply -input=false tf.plan
