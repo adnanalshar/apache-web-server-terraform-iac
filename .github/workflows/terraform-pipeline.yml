@@ -70,7 +70,7 @@ jobs:
           id: upload
           with:
             name: tf.plan
-            path: terraform
+            path: terraform/tf.plan
             retention-days: 3
 
     tf_apply:
@@ -98,7 +98,7 @@ jobs:
           id: download
           with:
             name: tf.plan
-            path: terraform
+            path: terraform/tf.plan
 
         - name: Terraform apply
           id: apply
