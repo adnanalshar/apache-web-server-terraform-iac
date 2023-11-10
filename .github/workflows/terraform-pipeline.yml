@@ -21,7 +21,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
           
         - uses: hashicorp/setup-terraform@v2
           with:
@@ -37,7 +37,7 @@ jobs:
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
 
         - uses: hashicorp/setup-terraform@v2
           with:
@@ -63,13 +63,21 @@ jobs:
           id: plan
           run: terraform plan -input=false -no-color -out tf.plan
 
+        - name: Upload plan file
+          uses: actions/upload-artifact@v3
+          id: upload
+          with:
+            name: terraform-plan
+            path: artifacts/${{ github.repository.id }}/tf.plan
+            retention-days: 3
+
     tf_apply:
       name: Terraform apply
       needs: [tf_plan]
       runs-on: ubuntu-latest
       steps:
         - name: Checkout repo
-          uses: actions/checkout@v3
+          uses: actions/checkout@v4
 
         - uses: hashicorp/setup-terraform@v2
           with:
@@ -82,6 +90,12 @@ jobs:
             aws-region: eu-central-1
             role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
             role-session-name: terraformapply
+
+        - name: Download plan file
+          uses: actions/download-artifact@v3
+          id: download
+          with:
+            name: terraform-plan
 
         - name: Terraform apply
           id: apply
