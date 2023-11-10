@@ -23,6 +23,7 @@ jobs:
   terraform:
     name: "Terraform Infrastructure Change Management"
     runs-on: ubuntu-latest
+    permissions: write-all
     defaults:
       run:
         shell: bash
