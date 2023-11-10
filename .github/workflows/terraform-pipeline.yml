@@ -7,6 +7,9 @@ on:
     paths:
       - '**/terraform/**'
 
+env:
+  repoid: ${GITHUB_REPOSITORY_ID}
+
 defaults:
   run:
     working-directory: terraform
@@ -68,7 +71,7 @@ jobs:
           id: upload
           with:
             name: terraform-plan
-            path: artifacts/${{ github.repository.id }}/tf.plan
+            path: artifacts/${{ env.repoid }}/tf.plan
             retention-days: 3
 
     tf_apply:
