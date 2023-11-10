@@ -4,8 +4,6 @@ on:
   pull_request:
     branches:
       - master
-    paths:
-      - '**/terraform/**'
 
 env:
   repoid: ${GITHUB_REPOSITORY_ID}
@@ -71,7 +69,7 @@ jobs:
           id: upload
           with:
             name: terraform-plan
-            path: artifacts/${{ env.repoid }}/tf.plan
+            path: tf.plan
             retention-days: 3
 
     tf_apply:
