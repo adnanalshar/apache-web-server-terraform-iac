@@ -30,7 +30,7 @@ jobs:
           run: terraform fmt -recursive -check 
 
     tf_plan_and_apply:
-      name: Terraform plan
+      name: Terraform plan and apply
       needs: [tf_unit_test]
       runs-on: ubuntu-latest
       steps:
