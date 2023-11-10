@@ -5,9 +5,9 @@ on:
     branches:
       - master
 
-env:
-  repo_id: ${GITHUB_REPOSITORY_ID}
-  plan_path: ${TERRAFORM_CLI_PATH}
+#env:
+#  repo_id: ${GITHUB_REPOSITORY_ID}
+#  plan_path: ${TERRAFORM_CLI_PATH}
 
 defaults:
   run:
@@ -63,14 +63,16 @@ jobs:
 
         - name: Terraform plan
           id: plan
-          run: terraform plan -out tf.plan
+          run: |
+            mkdir -p artifacts/terraform
+            terraform plan -out artifacts/terraform/tf.plan
 
         - name: Upload plan file
           uses: actions/upload-artifact@v3
           id: upload
           with:
             name: terraform-plan
-            path: ${{ env.plan_path }}/tf.plan
+            path: artifacts/terraform/tf.plan
             retention-days: 3
 
     tf_apply:
