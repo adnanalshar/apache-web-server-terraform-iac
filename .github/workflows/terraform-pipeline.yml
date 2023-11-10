@@ -47,7 +47,7 @@ jobs:
             audience: sts.amazonaws.com
             aws-region: eu-central-1
             role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
-            role-session-name: terraformplan
+            role-session-name: terraformpipeline
 
         - name: Terraform init
           id: init
