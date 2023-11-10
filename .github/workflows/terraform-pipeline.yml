@@ -5,10 +5,6 @@ on:
     branches:
       - master
 
-#env:
-#  repo_id: ${GITHUB_REPOSITORY_ID}
-#  plan_path: ${TERRAFORM_CLI_PATH}
-
 defaults:
   run:
     working-directory: terraform
@@ -33,7 +29,7 @@ jobs:
           id: fmt
           run: terraform fmt -recursive -check 
 
-    tf_plan:
+    tf_plan_and_apply:
       name: Terraform plan
       needs: [tf_unit_test]
       runs-on: ubuntu-latest
@@ -64,41 +60,6 @@ jobs:
         - name: Terraform plan
           id: plan
           run: terraform plan -out tf.plan
-
-        - name: Upload plan file
-          uses: actions/upload-artifact@v3
-          id: upload
-          with:
-            name: tf.plan
-            path: terraform/tf.plan
-            retention-days: 2
-
-    tf_apply:
-      name: Terraform apply
-      needs: [tf_plan]
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout repo
-          uses: actions/checkout@v4
-
-        - uses: hashicorp/setup-terraform@v2
-          with:
-            terraform_version: 0.15.3
-
-        - name: Configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            audience: sts.amazonaws.com
-            aws-region: eu-central-1
-            role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
-            role-session-name: terraformapply
-
-        - name: Download plan file
-          uses: actions/download-artifact@v3
-          id: download
-          with:
-            name: tf.plan
-            path: terraform/tf.plan
 
         - name: Terraform apply
           id: apply
