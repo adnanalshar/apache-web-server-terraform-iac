@@ -1,66 +1,99 @@
 name: TF pipeline
 
 on:
+  push:
+    branches:
+      - master
+    paths:
+      - terraform/**
   pull_request:
     branches:
       - master
+    paths:
+      - terraform/**
 
-defaults:
-  run:
-    working-directory: terraform
-
-permissions:
-  id-token: write
-  contents: read
+env:
+  TF_LOG: INFO
 
 jobs:
-    tf_unit_test:
-      name: Terraform unit testing
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout repo
-          uses: actions/checkout@v4
-          
-        - uses: hashicorp/setup-terraform@v2
-          with:
-            terraform_version: 0.15.3
+  terraform:
+    name: "Terraform Infrastructure Change Management"
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      pull-requests: write
+      contents: read
+    defaults:
+      run:
+        shell: bash
+        working-directory: terraform
+        
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup TF
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 0.15.3
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          audience: sts.amazonaws.com
+          aws-region: eu-central-1
+          role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
+          role-session-name: terraformpipeline
+
+      - name: Terraform init
+        id: init
+        run: terraform init
             
-        - name: Terraform fmt
-          id: fmt
-          run: terraform fmt -recursive -check 
+      - name: Terraform fmt
+        id: fmt
+        run: terraform fmt -recursive -check
 
-    tf_plan_and_apply:
-      name: Terraform plan and apply
-      needs: [tf_unit_test]
-      runs-on: ubuntu-latest
-      steps:
-        - name: Checkout repo
-          uses: actions/checkout@v4
+      - name: Terraform validate
+        id: validate
+        run: terraform validate
 
-        - uses: hashicorp/setup-terraform@v2
-          with:
-            terraform_version: 0.15.3
+      - name: Terraform plan
+        id: plan
+        if: github.event_name == 'pull_request'
+        run: terraform plan -no-color -input=false
+        continue-on-error: true
 
-        - name: Configure AWS credentials
-          uses: aws-actions/configure-aws-credentials@v4
-          with:
-            audience: sts.amazonaws.com
-            aws-region: eu-central-1
-            role-to-assume: arn:aws:iam::773056711253:role/GithubActionsAccessIAMRole
-            role-session-name: terraformpipeline
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          script: |
+            const output = `#### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+  
+            <details><summary>Show Plan</summary>
+  
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+  
+            </details>
+            *Pushed by: @${{ github.actor }}, Action: \`${{ github.event_name }}\`*`;
+  
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
 
-        - name: Terraform init
-          id: init
-          run: terraform init
-            
-        - name: Terraform validate
-          id: validate
-          run: terraform validate
-
-        - name: Terraform plan
-          id: plan
-          run: terraform plan -out tf.plan
-
-        - name: Terraform apply
-          id: apply
-          run: terraform apply -input=false tf.plan
+      - name: Terraform Plan Status
+        if: steps.plan.outcome == 'failure'
+        run: exit 1
+      
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve -input=false
