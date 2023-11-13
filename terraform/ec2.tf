@@ -1,6 +1,6 @@
 resource "aws_key_pair" "webserver_key" {
   key_name   = "webserver_key"
-  public_key = file("~/.ssh/id_rsa.pub")
+  public_key = file("${path.module}/.ssh/id_rsa.pub")
 }
 
 resource "aws_instance" "webserver_instance" {
