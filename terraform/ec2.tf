@@ -4,7 +4,7 @@ resource "aws_instance" "webserver_instance" {
   associate_public_ip_address = true
   vpc_security_group_ids      = [aws_security_group.webserver_sg.id]
   subnet_id                   = module.vpc.public_subnets[*]
-  user_data                   = file(user_data.sh)
+  user_data                   = file("user_data.sh")
   tags = {
     Name = "webserver"
   }
