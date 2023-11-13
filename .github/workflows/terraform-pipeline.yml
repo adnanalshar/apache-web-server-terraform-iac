@@ -13,7 +13,7 @@ on:
       - terraform/**
 
 env:
-  TF_LOG: TRACE
+  TF_LOG: INFO
 
 jobs:
   terraform:
