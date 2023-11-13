@@ -18,3 +18,7 @@ variable "vpc_private_subnets" {
 variable "vpc_public_subnets" {
   default = ["10.0.201.0/24", "10.0.202.0/24", "10.0.203.0/24"]
 }
+
+variable "public_key_path" {
+  default = "~/.ssh/id_rsa.pub"
+}
